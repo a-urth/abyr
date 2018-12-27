@@ -30,6 +30,7 @@ func portsReader(
 		log.Errorf("error during file opening - %v", err)
 		return
 	}
+	defer file.Close()
 
 	dec := json.NewDecoder(file)
 

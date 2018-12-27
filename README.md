@@ -1,10 +1,15 @@
 #### Installation
-``
+1. Get the code
+`git clone https://github.com/a-urth/abyr`
 
-2. Test
+2. Build
+`go build ./...`
+
+3. Test
 `make test`
 
 #### Running
+Its better to start them in that order, because without db nothing will work anyway, and for client api there is no proper retry mechanism (it depends on how it should be done because of memory constraints)
 1. DB
 - `docker-compose up postgres`
 - `make port-migrations-up`
@@ -16,7 +21,7 @@ OR
 
 3. Client API service
 * NOTE since there is no configuration service relies to have "ports.json" file in project root
-* and because of lack of configuration hosts are hardcoded to docker image names, so in order to everything work running it locally, those values should be changes to `localhost`
+* and because of lack of configuration hosts are hardcoded to docker image names, so in order to everything work running it locally, those values should be changed to `localhost`
 - `go run src/service/clientapi/cmd/service/main.go`
 OR
 - `docker-compose up clientapi`

@@ -43,6 +43,8 @@ func NewService() (Servicer, error) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	wg := new(sync.WaitGroup)
+	// this is hard limit on amount of stuff we keep in memory
+	// its done like that because, you've guessed it, no configuration
 	portsChan := make(chan portpb.Port, 50)
 
 	service := Service{
