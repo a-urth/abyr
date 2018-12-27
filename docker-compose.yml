@@ -1,6 +1,21 @@
 version: '3'
 services:
 
+  port-service:
+    container_name: port-service
+    image: golang:1.11
+    working_dir: /app
+    environment:
+    - GOPATH=/go
+    ports:
+      - 14000:14000
+    links:
+      - postgres
+    volumes:
+      - .:/app
+      - $GOPATH/pkg/mod:/go/pkg/mod
+    command: go run src/service/port/cmd/service/main.go
+
   postgres:
     container_name: postgres
     image: postgres:9.6

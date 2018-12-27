@@ -8,11 +8,22 @@ import (
 
 	"github.com/a-urth/abyr/pb/portpb"
 	"github.com/a-urth/abyr/src/service/port/storage"
+	"github.com/a-urth/abyr/src/service/port/storage/postgres"
 )
 
 // Service is a port service container
 type Service struct {
 	storage storage.Storer
+}
+
+// NewService creates and returns port service instance
+func NewService() (portpb.PortServiceServer, error) {
+	storage, err := postgres.NewStorer()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Service{storage}, nil
 }
 
 // GetPort return port info for given port id
@@ -24,7 +35,6 @@ func (s *Service) GetPort(
 		log.WithFields(
 			log.Fields{
 				"service": "Port",
-				"method":  "GetPort",
 				"portID":  req.Id,
 			},
 		).Error(err)
@@ -44,7 +54,6 @@ func (s *Service) UpsertPort(
 		log.WithFields(
 			log.Fields{
 				"service": "Port",
-				"method":  "UpsertPort",
 				"port":    req,
 			},
 		).Error(err)
