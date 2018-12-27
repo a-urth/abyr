@@ -4,7 +4,7 @@ CREATE TABLE port (
 	city TEXT NOT NULL DEFAULT '',
 	country TEXT NOT NULL DEFAULT '',
 	alias TEXT[],
-	regions TEXT[] NOT NULL,
+	regions TEXT[],
 	coordinates TEXT[] NOT NULL,
 	province TEXT NOT NULL DEFAULT '',
 	timezone TEXT NOT NULL DEFAULT '',

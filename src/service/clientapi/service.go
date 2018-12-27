@@ -36,7 +36,7 @@ type Servicer interface {
 // NewService creates and returns port service instance
 // TODO: proper configuration should be used here
 func NewService() (Servicer, error) {
-	portClient, closer, err := client.NewClient(":14000")
+	portClient, closer, err := client.NewClient("port:14000")
 	if err != nil {
 		return nil, err
 	}

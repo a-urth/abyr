@@ -27,7 +27,7 @@ func main() {
 	router.HandleFunc("/ping", service.Ping).Methods("GET")
 	router.HandleFunc("/port/{id}", service.GetPort).Methods("GET")
 
-	host := "127.0.0.1:8000"
+	host := ":8000"
 	srv := &http.Server{
 		Handler:      router,
 		Addr:         host,

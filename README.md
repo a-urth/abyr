@@ -10,11 +10,17 @@
 - `make port-migrations-up`
 
 2. Port service
+- `go run src/service/port/cmd/service/main.go`
+OR
 - `docker-compose up port-service`
 
 3. Client API service
+* NOTE since there is no configuration service relies to have "ports.json" file in project root
+* and because of lack of configuration hosts are hardcoded to docker image names, so in order to everything work running it locally, those values should be changes to `localhost`
+- `go run src/service/clientapi/cmd/service/main.go`
+OR
 - `docker-compose up clientapi`
-- NOTE since there is no configuration service relies to have "ports.json" file in project root
+
 
 #### Future improvements and some comments
 - there is ZERO configuration right now, since I didn't have time to implement it properly; i'm not exactly aware on what's the best tool for that, but i'd use viper

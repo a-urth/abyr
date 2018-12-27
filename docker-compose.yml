@@ -14,16 +14,14 @@ services:
       - $GOPATH/pkg/mod:/go/pkg/mod
     command: go run src/service/clientapi/cmd/service/main.go
 
-  port-service:
-    container_name: port-service
+  port:
+    container_name: port
     image: golang:1.11
     working_dir: /app
     environment:
     - GOPATH=/go
     ports:
       - 14000:14000
-    links:
-      - postgres
     volumes:
       - .:/app
       - $GOPATH/pkg/mod:/go/pkg/mod

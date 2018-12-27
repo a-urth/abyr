@@ -3,9 +3,9 @@ package main
 import (
 	"net"
 
-	"google.golang.org/grpc"
 	log "github.com/sirupsen/logrus"
-	
+	"google.golang.org/grpc"
+
 	"github.com/a-urth/abyr/pb/portpb"
 	"github.com/a-urth/abyr/src/service/port"
 )
