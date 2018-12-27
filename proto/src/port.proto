@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package abyr.port;
+option go_package = "pb/portpb";
+
+import "google/protobuf/empty.proto";
+
+message PortID {
+    string id = 1;
+}
+
+message Port {
+    string id = 1;
+    string name = 2;
+    string city = 3;
+    string country = 4;
+    repeated string alias = 5;
+    repeated string regions = 6;
+    repeated string coordinates = 7;
+    string province = 8;
+    string timezone = 9;
+    repeated string unlocs = 10;
+    string code = 11;
+}
+
+service PortService {
+    rpc GetPort (PortID) returns (Port);
+    rpc UpsertPort (Port) returns (google.protobuf.Empty);
+}
