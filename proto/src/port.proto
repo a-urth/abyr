@@ -16,7 +16,7 @@ message Port {
     string country = 4;
     repeated string alias = 5;
     repeated string regions = 6;
-    repeated string coordinates = 7;
+    repeated float coordinates = 7;
     string province = 8;
     string timezone = 9;
     repeated string unlocs = 10;
@@ -26,4 +26,5 @@ message Port {
 service PortService {
     rpc GetPort (PortID) returns (Port);
     rpc UpsertPort (Port) returns (google.protobuf.Empty);
+    rpc DeletePort (PortID) returns (google.protobuf.Empty);
 }

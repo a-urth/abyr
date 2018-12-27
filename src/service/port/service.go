@@ -1,6 +1,7 @@
 package port
 
 import (
+	"io"
 	"context"
 
 	"github.com/golang/protobuf/ptypes/empty"
@@ -17,13 +18,14 @@ type Service struct {
 }
 
 // NewService creates and returns port service instance
-func NewService() (portpb.PortServiceServer, error) {
-	storage, err := postgres.NewStorer()
+// TODO: proper configuration should be used here
+func NewService() (portpb.PortServiceServer, io.Closer, error) {
+	storage, err := postgres.NewStorer("postgres", "5432")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return &Service{storage}, nil
+	return &Service{storage}, storage, nil
 }
 
 // GetPort return port info for given port id
@@ -55,6 +57,25 @@ func (s *Service) UpsertPort(
 			log.Fields{
 				"service": "Port",
 				"port":    req,
+			},
+		).Error(err)
+
+		return nil, err
+	}
+
+	return new(empty.Empty), nil
+}
+
+// DeletePort deletes port from database
+func (s *Service) DeletePort(
+	ctx context.Context, req *portpb.PortID,
+) (*empty.Empty, error) {
+	err := s.storage.DeletePort(ctx, req.Id)
+	if err != nil {
+		log.WithFields(
+			log.Fields{
+				"service": "Port",
+				"portID":    req.Id,
 			},
 		).Error(err)
 

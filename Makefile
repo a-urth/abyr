@@ -6,3 +6,6 @@ port-migrations-up:
 
 port-migrations-down:
 	docker run -v `pwd`/src/service/port/storage/postgres/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database postgresql://postgres:@localhost:5432/postgres?sslmode=disable down
+
+test:
+	go test ./...

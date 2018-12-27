@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -16,11 +18,14 @@ type Storer struct {
 }
 
 // NewStorer creates and returns postgres storer implementation object
-func NewStorer() (storage.Storer, error) {
-	db, err := sqlx.Open(
-		"postgres",
-		"user=postgres dbname=postgres sslmode=disable",
+// TODO: proper configuration should be used here
+func NewStorer(host, port string) (storage.Storer, error) {
+	connString := fmt.Sprintf(
+		"user=postgres dbname=postgres sslmode=disable host=%s port=%s",
+		host, port,
 	)
+
+	db, err := sqlx.Connect("postgres", connString)
 	if err != nil {
 		return nil, err
 	}
@@ -34,17 +39,28 @@ func (s *Storer) GetPort(
 	ctx context.Context, portID string,
 ) (*portpb.Port, error) {
 	port := portpb.Port{}
+	coordinates := []string{}
 	err := s.db.QueryRowContext(
 		ctx,
 		`SELECT id, name, city, country, alias, regions, coordinates, province, timezone, unlocs, code FROM port WHERE id = $1`,
 		portID,
 	).Scan(
 		&port.Id, &port.Name, &port.City, &port.Country, pq.Array(&port.Alias),
-		pq.Array(&port.Regions), pq.Array(&port.Coordinates), &port.Province,
+		pq.Array(&port.Regions), pq.Array(&coordinates), &port.Province,
 		&port.Timezone, pq.Array(&port.Unlocs), &port.Code,
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	port.Coordinates = make([]float32, len(coordinates))
+	for i, coord := range coordinates {
+		v, err := strconv.ParseFloat(coord, 32)
+		if err != nil {
+			return nil, err
+		}
+
+		port.Coordinates[i] = float32(v)
 	}
 
 	return &port, nil
@@ -54,6 +70,12 @@ func (s *Storer) GetPort(
 func (s *Storer) UpsertPort(
 	ctx context.Context, port *portpb.Port,
 ) error {
+	// unfortunatelly pq doesn't know how to work with pg array of floats
+	coordinates := make([]string, len(port.Coordinates))
+	for i, coord := range port.Coordinates {
+		coordinates[i] = fmt.Sprintf("%f", coord)
+	}
+
 	_, err := s.db.NamedExecContext(
 		ctx,
 		`INSERT INTO port (id, name, city, country, alias, regions, coordinates, province, timezone, unlocs, code) `+
@@ -78,7 +100,7 @@ func (s *Storer) UpsertPort(
 			"country":     port.Country,
 			"alias":       pq.Array(port.Alias),
 			"regions":     pq.Array(port.Regions),
-			"coordinates": pq.Array(port.Coordinates),
+			"coordinates": pq.Array(coordinates),
 			"province":    port.Province,
 			"timezone":    port.Timezone,
 			"unlocs":      pq.Array(port.Unlocs),
@@ -86,6 +108,14 @@ func (s *Storer) UpsertPort(
 		},
 	)
 
+	return err
+}
+
+// DeletePort hard deletes port from database
+func (s *Storer) DeletePort(ctx context.Context, portID string) error {
+	_, err := s.db.ExecContext(
+		ctx, "DELETE FROM port WHERE id = $1", portID,
+	)
 	return err
 }
 

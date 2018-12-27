@@ -10,5 +10,6 @@ import (
 type Storer interface {
 	GetPort(ctx context.Context, portID string) (*portpb.Port, error)
 	UpsertPort(ctx context.Context, port *portpb.Port) error
+	DeletePort(ctx context.Context, portID string) error
 	Close() error
 }

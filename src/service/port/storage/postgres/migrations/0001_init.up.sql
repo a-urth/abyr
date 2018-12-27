@@ -3,7 +3,7 @@ CREATE TABLE port (
 	name TEXT NOT NULL DEFAULT '',
 	city TEXT NOT NULL DEFAULT '',
 	country TEXT NOT NULL DEFAULT '',
-	alias TEXT[] NOT NULL,
+	alias TEXT[],
 	regions TEXT[] NOT NULL,
 	coordinates TEXT[] NOT NULL,
 	province TEXT NOT NULL DEFAULT '',

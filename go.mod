@@ -2,6 +2,7 @@ module github.com/a-urth/abyr
 
 require (
 	github.com/golang/protobuf v1.2.1-0.20181128192352-1d3f30b51784
+	github.com/gorilla/mux v1.6.2
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.0.0
 	github.com/sirupsen/logrus v1.2.0

@@ -1,6 +1,19 @@
 version: '3'
 services:
 
+  clientapi:
+    container_name: clientapi
+    image: golang:1.11
+    working_dir: /app
+    environment:
+    - GOPATH=/go
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+      - $GOPATH/pkg/mod:/go/pkg/mod
+    command: go run src/service/clientapi/cmd/service/main.go
+
   port-service:
     container_name: port-service
     image: golang:1.11

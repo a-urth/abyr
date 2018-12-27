@@ -14,7 +14,7 @@ import (
 func TestPort(t *testing.T) {
 	ctx := context.TODO()
 
-	store, err := postgres.NewStorer()
+	store, err := postgres.NewStorer("localhost", "5432")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -22,22 +22,23 @@ func TestPort(t *testing.T) {
 
 	service := Service{store}
 
-	p, err := service.GetPort(ctx, &portpb.PortID{Id: "AEAJM"})
+	portID := portpb.PortID{Id: "AEAJM"}
+	p, err := service.GetPort(ctx, &portID)
 	// since there are no ports we expect error and nil result
 	if !(assert.EqualError(t, err, sql.ErrNoRows.Error()) && assert.Nil(t, p)) {
 		return
 	}
 
 	port := portpb.Port{
-		Id:      "AEAJM",
+		Id:      portID.Id,
 		Name:    "Ajman",
 		City:    "Ajman",
 		Country: "United Arab Emirates",
 		Alias:   []string{},
 		Regions: []string{},
-		Coordinates: []string{
-			"55.5136433",
-			"25.4052165",
+		Coordinates: []float32{
+			55.5136433,
+			25.4052165,
 		},
 		Province: "Ajman",
 		Timezone: "Asia/Dubai",
@@ -49,10 +50,21 @@ func TestPort(t *testing.T) {
 		return
 	}
 
-	dbPort, err := service.GetPort(ctx, &portpb.PortID{Id: "AEAJM"})
+	dbPort, err := service.GetPort(ctx, &portID)
 	if !(assert.NoError(t, err) && assert.NotNil(t, dbPort)) {
 		return
 	}
 
 	assert.Equal(t, port, *dbPort)
+
+	resp, err = service.DeletePort(ctx, &portID)
+	if !(assert.NoError(t, err) && assert.NotNil(t, resp)) {
+		return
+	}
+
+	p, err = service.GetPort(ctx, &portID)
+	// ensure that port cannot be found after deletion
+	if !(assert.EqualError(t, err, sql.ErrNoRows.Error()) && assert.Nil(t, p)) {
+		return
+	}
 }
